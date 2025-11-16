@@ -1,7 +1,8 @@
-const questionsTable = document.getElementById('questions');
-const tbody = questionsTable.querySelector('tbody');
+const questionsContainer = document.getElementById('questions');
 const statusEl = document.getElementById('status');
-const startIndexInput = document.getElementById('start-index');
+const searchInput = document.getElementById('search');
+const sortSelect = document.getElementById('sort');
+const limitSelect = document.getElementById('limit');
 
 let originalQuestions = [];
 let filteredQuestions = [];
@@ -72,12 +73,9 @@ function parseQuestions(text, filePath) {
 function extractQuestion(entry, index) {
   if (!entry) return { question: `Unknown question at index ${index}` };
   if (typeof entry === 'string') return { question: entry };
-
-  const rawQuestion = 'question' in entry ? entry.question : Object.values(entry)[0];
-  const questionText = rawQuestion ? String(rawQuestion) : `Question ${index}`;
-  const image = entry.image || entry.image_url || entry.imageUrl || entry.url || '';
-
-  return { question: questionText, image };
+  if ('question' in entry) return { question: entry.question };
+  const [firstValue] = Object.values(entry);
+  return { question: String(firstValue) };
 }
 
 function applyQuestions(questions) {
@@ -87,52 +85,45 @@ function applyQuestions(questions) {
 }
 
 function render() {
-  const startAt = Number(startIndexInput.value) || 0;
+  const query = searchInput.value.trim().toLowerCase();
+  const sort = sortSelect.value;
+  const limit = Number(limitSelect.value);
 
-  filteredQuestions = originalQuestions.filter((item) => item.index > startAt);
+  filteredQuestions = originalQuestions.filter((item) => item.question.toLowerCase().includes(query));
 
-  tbody.innerHTML = '';
+  if (sort === 'asc') {
+    filteredQuestions.sort((a, b) => a.question.localeCompare(b.question));
+  } else if (sort === 'desc') {
+    filteredQuestions.sort((a, b) => b.question.localeCompare(a.question));
+  }
 
-  if (filteredQuestions.length === 0) {
-    const row = document.createElement('tr');
-    const cell = document.createElement('td');
-    cell.colSpan = 3;
-    cell.className = 'empty';
-    cell.textContent = 'No questions to display yet.';
-    row.appendChild(cell);
-    tbody.appendChild(row);
+  const toShow = limit > 0 ? filteredQuestions.slice(0, limit) : filteredQuestions;
+
+  questionsContainer.innerHTML = '';
+
+  if (toShow.length === 0) {
+    questionsContainer.innerHTML = '<p class="empty">No questions match your search yet.</p>';
     return;
   }
 
   const fragment = document.createDocumentFragment();
 
-  filteredQuestions.forEach((item) => {
-    const row = document.createElement('tr');
+  toShow.forEach((item) => {
+    const card = document.createElement('article');
+    card.className = 'card';
 
-    const indexCell = document.createElement('td');
-    indexCell.textContent = item.index;
-    row.appendChild(indexCell);
+    const heading = document.createElement('h3');
+    heading.textContent = `Q${item.index}`;
 
-    const questionCell = document.createElement('td');
-    questionCell.textContent = item.question;
-    row.appendChild(questionCell);
+    const body = document.createElement('p');
+    body.textContent = item.question;
 
-    const imageCell = document.createElement('td');
-    if (item.image) {
-      const img = document.createElement('img');
-      img.src = item.image;
-      img.alt = `Image for question ${item.index}`;
-      img.loading = 'lazy';
-      imageCell.appendChild(img);
-    } else {
-      imageCell.textContent = '—';
-    }
-    row.appendChild(imageCell);
-
-    fragment.appendChild(row);
+    card.appendChild(heading);
+    card.appendChild(body);
+    fragment.appendChild(card);
   });
 
-  tbody.appendChild(fragment);
+  questionsContainer.appendChild(fragment);
 }
 
 async function loadSample() {
@@ -154,7 +145,9 @@ async function loadSample() {
 // Wire up interactions
 document.getElementById('load-remote').addEventListener('click', fetchQuestionsFromHuggingFace);
 document.getElementById('load-sample').addEventListener('click', loadSample);
-startIndexInput.addEventListener('input', render);
+searchInput.addEventListener('input', render);
+sortSelect.addEventListener('change', render);
+limitSelect.addEventListener('change', render);
 
 // Initial sample load for quick preview
 loadSample();

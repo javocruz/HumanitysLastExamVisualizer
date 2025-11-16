@@ -39,26 +39,31 @@
 
     <section class="filters">
       <div class="control-group inline">
-        <label for="start-index">Start at question #</label>
-        <input id="start-index" type="number" min="0" value="0" placeholder="e.g. 1200">
-        <small class="hint">Enter a number to only show questions with a higher index.</small>
+        <label for="search">Search questions</label>
+        <input id="search" type="search" placeholder="Filter by keywords">
+      </div>
+      <div class="control-group inline">
+        <label for="sort">Sort</label>
+        <select id="sort">
+          <option value="original">Original order</option>
+          <option value="asc">A → Z</option>
+          <option value="desc">Z → A</option>
+        </select>
+      </div>
+      <div class="control-group inline">
+        <label for="limit">Show</label>
+        <select id="limit">
+          <option value="50">50</option>
+          <option value="100">100</option>
+          <option value="200">200</option>
+          <option value="0">All</option>
+        </select>
       </div>
     </section>
 
-    <section class="table-wrapper">
+    <section>
       <h2>Questions</h2>
-      <div class="table-scroll">
-        <table id="questions" aria-live="polite">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Question</th>
-              <th scope="col">Image</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+      <div id="questions" class="card-grid" aria-live="polite"></div>
     </section>
   </main>
 

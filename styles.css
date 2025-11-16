@@ -137,57 +137,33 @@ h2 {
   margin-top: 24px;
 }
 
-.table-wrapper h2 {
-  margin-bottom: 8px;
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
 }
 
-.table-scroll {
+.card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.06));
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
+  padding: 16px;
   box-shadow: var(--shadow);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.06));
-  max-height: 75vh;
-  overflow-y: auto;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-thead {
-  background: rgba(255, 255, 255, 0.04);
-}
-
-th,
-td {
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--border);
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
-  font-size: 13px;
-  letter-spacing: 0.01em;
+.card h3 {
+  margin: 0;
+  font-size: 14px;
   color: var(--muted);
-  text-transform: uppercase;
 }
 
-tbody tr:nth-child(odd) {
-  background: rgba(255, 255, 255, 0.02);
-}
-
-tbody tr:hover {
-  background: rgba(124, 111, 242, 0.08);
-}
-
-td img {
-  max-width: 180px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  display: block;
+.card p {
+  margin: 0;
+  line-height: 1.5;
 }
 
 .empty {
